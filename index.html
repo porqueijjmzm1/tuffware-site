@@ -1,0 +1,604 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="TuffWare - free external overlay for Roblox. Aimbot, ESP, triggerbot and more. Free forever.">
+<title>TuffWare</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: dark product page â€” sticky nav, hero with live overlay preview,
+   feature grid grouped by menu tab, spec strip, inert download CTA. */
+:root{
+  --bg:#0a0b0e;            /* page ground */
+  --bg2:#101218;           /* raised band */
+  --panel:#121217;         /* menu panel */
+  --panel2:#0d0d11;        /* sidebar */
+  --line:#20222b;          /* hairlines */
+  --fg:#e9eaee;            /* primary text */
+  --mut:#8b8f9c;           /* secondary text */
+  --dim:#5a5e6b;           /* tertiary */
+  --acc:#50dc82;           /* TuffWare green */
+  --acc-dim:#2f8a53;
+  --acc-glow:rgba(80,220,130,.16);
+  --danger:#ff5d6c;
+  --radius:16px;
+  --maxw:1120px;
+  --f-head:"Space Grotesk",system-ui,sans-serif;
+  --f-body:"Inter",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:
+    radial-gradient(900px 500px at 80% -10%, rgba(80,220,130,.10), transparent 60%),
+    radial-gradient(700px 500px at 0% 0%, rgba(80,220,130,.05), transparent 55%),
+    var(--bg);
+  color:var(--fg);
+  font-family:var(--f-body);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-family:var(--f-head);text-wrap:balance;margin:0;letter-spacing:-.02em}
+.wrap{width:100%;max-width:var(--maxw);margin-inline:auto;
+  padding-left:max(20px,env(safe-area-inset-left,0px));
+  padding-right:max(20px,env(safe-area-inset-right,0px));}
+
+/* ---------- nav ---------- */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;
+  backdrop-filter:blur(12px);background:rgba(10,11,14,.72);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:rgba(10,11,14,.9)}
+.nav .wrap{display:flex;align-items:center;gap:18px;padding-block:14px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-head);font-weight:700;font-size:19px}
+.brand .mark{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex:none;
+  background:linear-gradient(135deg,var(--acc),var(--acc-dim));color:#06240f;font-weight:800;font-size:15px;
+  box-shadow:0 0 18px var(--acc-glow)}
+.brand .g{color:var(--acc)}
+.nav .links{display:flex;gap:22px;margin-left:auto;font-size:14px;color:var(--mut)}
+.nav .links a:hover{color:var(--fg)}
+.nav .mini{font-family:var(--f-mono);font-size:12px;color:var(--acc);border:1px solid var(--line);
+  padding:4px 9px;border-radius:999px}
+@media(max-width:720px){.nav .links{display:none}}
+
+/* ---------- buttons ---------- */
+.btn{font-family:var(--f-head);font-weight:600;font-size:15px;border-radius:11px;padding:13px 22px;
+  border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:.18s}
+.btn-primary{background:linear-gradient(135deg,var(--acc),var(--acc-dim));color:#06240f;
+  box-shadow:0 8px 30px var(--acc-glow)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 38px rgba(80,220,130,.28)}
+.btn-ghost{background:#15171e;color:var(--fg);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--acc-dim);color:#fff}
+
+/* ---------- hero ---------- */
+.hero{padding-block:clamp(52px,8vw,96px) 40px}
+.hero .wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(28px,5vw,64px);align-items:center}
+@media(max-width:880px){.hero .wrap{grid-template-columns:1fr}}
+.eyebrow{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--acc);display:flex;align-items:center;gap:9px;margin-bottom:20px}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--acc)}
+.hero h1{font-size:clamp(40px,7vw,68px);line-height:1.02;font-weight:700}
+.hero h1 .g{color:var(--acc)}
+.hero p.lead{color:var(--mut);font-size:clamp(16px,2vw,19px);margin:22px 0 30px;max-width:46ch}
+.cta-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.cta-note{font-size:13px;color:var(--dim);font-family:var(--f-mono)}
+.stat-row{display:flex;gap:28px;margin-top:38px;flex-wrap:wrap}
+.stat .n{font-family:var(--f-head);font-size:26px;font-weight:700;color:var(--fg)}
+.stat .l{font-size:12.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+
+/* ---------- overlay preview mockup ---------- */
+.preview-shell{position:relative}
+.wm{display:inline-flex;align-items:center;gap:0;background:rgba(14,14,18,.92);border:1px solid var(--line);
+  border-radius:9px;padding:7px 13px 7px 0;font-size:12.5px;margin:0 auto 14px;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);overflow:hidden}
+.wm .bar{width:3px;align-self:stretch;background:var(--acc);margin-right:11px}
+.wm b{font-family:var(--f-head);font-weight:700}
+.wm .g{color:var(--acc)}
+.wm .sep{color:var(--dim);margin:0 9px}
+.wm .mut{color:var(--mut);font-family:var(--f-mono)}
+
+.mockscroll{overflow-x:auto;padding-bottom:6px}
+.mock{min-width:560px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+  display:grid;grid-template-columns:168px 1fr;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.mock .side{background:var(--panel2);border-right:1px solid var(--line);padding:18px 12px}
+.mock .logo{display:flex;align-items:center;gap:9px;padding:4px 8px 18px;font-family:var(--f-head);font-weight:700;font-size:20px}
+.mock .logo .mark{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,var(--acc),var(--acc-dim));
+  color:#06240f;display:grid;place-items:center;font-size:13px;font-weight:800}
+.mock .logo .g{color:var(--acc)}
+.navitem{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;color:var(--mut);
+  font-size:14px;cursor:pointer;position:relative;transition:.15s;font-weight:500}
+.navitem .dot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.5}
+.navitem:hover{background:rgba(255,255,255,.04);color:var(--fg)}
+.navitem.on{color:var(--fg);background:var(--acc-glow)}
+.navitem.on::before{content:"";position:absolute;left:3px;top:11px;bottom:11px;width:3px;border-radius:2px;background:var(--acc)}
+.navitem.on .dot{opacity:1;background:var(--acc)}
+.mock .body{padding:22px 24px;min-height:330px;min-width:0}
+.mock .body h3{font-size:18px;margin-bottom:4px}
+.mock .body .sub{color:var(--dim);font-size:13px;margin-bottom:20px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row .rl{font-size:14px}
+.row .rd{font-size:12px;color:var(--dim)}
+.sw{width:42px;height:24px;border-radius:999px;background:#2a2d37;position:relative;flex:none;cursor:pointer;transition:.2s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#f7f7fa;transition:.2s}
+.sw.on{background:var(--acc)}
+.sw.on::after{left:21px}
+.sld{display:flex;align-items:center;gap:12px;flex:none;width:150px}
+.track{flex:1;height:5px;border-radius:3px;background:#2a2d37;position:relative;cursor:pointer}
+.fill{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--acc)}
+.knob{position:absolute;top:50%;transform:translate(-50%,-50%);width:14px;height:14px;border-radius:50%;
+  background:#f7f7fa;box-shadow:0 1px 4px rgba(0,0,0,.5)}
+.sval{font-family:var(--f-mono);font-size:12px;color:var(--acc);width:40px;text-align:right}
+.seg{display:flex;gap:6px}
+.seg span{font-size:12px;padding:5px 11px;border-radius:7px;background:#1a1c24;color:var(--mut);cursor:pointer}
+.seg span.on{background:var(--acc);color:#06240f;font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding-block:clamp(46px,7vw,84px)}
+.sec-head{max-width:620px;margin-bottom:40px}
+.sec-head .eyebrow{margin-bottom:14px}
+.sec-head h2{font-size:clamp(28px,4.4vw,42px);font-weight:700}
+.sec-head p{color:var(--mut);margin-top:12px;font-size:16px}
+.band{background:linear-gradient(180deg,transparent,var(--bg2) 12%,var(--bg2) 88%,transparent);border-block:1px solid var(--line)}
+
+/* feature groups */
+.fgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+@media(max-width:760px){.fgrid{grid-template-columns:1fr}}
+.card{background:#101117;border:1px solid var(--line);border-radius:14px;padding:24px;transition:.2s}
+.card:hover{border-color:var(--acc-dim);transform:translateY(-3px)}
+.card .top{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.ico{width:40px;height:40px;border-radius:10px;flex:none;display:grid;place-items:center;
+  background:var(--acc-glow);border:1px solid rgba(80,220,130,.25)}
+.ico svg{width:20px;height:20px;stroke:var(--acc);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.card h3{font-size:18px}
+.card .tag{font-family:var(--f-mono);font-size:11px;color:var(--acc);text-transform:uppercase;letter-spacing:.08em}
+.card>p{color:var(--mut);font-size:14.5px;margin:10px 0 16px}
+.feats{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px}
+.feats li{display:flex;gap:10px;font-size:13.5px;color:var(--fg)}
+.feats li::before{content:"";margin-top:7px;width:6px;height:6px;border-radius:50%;flex:none;
+  background:var(--acc);box-shadow:0 0 8px var(--acc-glow)}
+.feats li span{color:var(--mut)}
+
+/* specs */
+.specs{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:14px;overflow:hidden}
+@media(max-width:760px){.specs{grid-template-columns:repeat(2,1fr)}}
+.spec{background:#101117;padding:22px}
+.spec .k{font-family:var(--f-mono);font-size:11.5px;color:var(--acc);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.spec .v{font-family:var(--f-head);font-size:17px;font-weight:600}
+.spec .v small{display:block;color:var(--mut);font-size:12.5px;font-weight:400;font-family:var(--f-body);margin-top:3px}
+kbd{font-family:var(--f-mono);font-size:12px;background:#1a1c24;border:1px solid var(--line);
+  border-bottom-width:2px;border-radius:6px;padding:2px 7px;color:var(--fg)}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:s}
+@media(max-width:760px){.steps{grid-template-columns:1fr}}
+.step{background:#101117;border:1px solid var(--line);border-radius:14px;padding:24px;counter-increment:s;position:relative}
+.step::before{content:"0" counter(s);font-family:var(--f-mono);font-size:13px;color:var(--acc);
+  border:1px solid var(--acc-dim);border-radius:8px;padding:3px 9px;display:inline-block;margin-bottom:14px}
+.step h3{font-size:17px;margin-bottom:6px}
+.step p{color:var(--mut);font-size:14px;margin:0}
+
+/* download cta */
+.dlcta{text-align:center;background:
+  radial-gradient(600px 240px at 50% 0%, var(--acc-glow), transparent 70%),#101117;
+  border:1px solid var(--line);border-radius:20px;padding:clamp(40px,6vw,64px)}
+.dlcta h2{font-size:clamp(28px,4.6vw,44px)}
+.dlcta p{color:var(--mut);max-width:48ch;margin:14px auto 28px}
+.dlcta .ver{font-family:var(--f-mono);font-size:12.5px;color:var(--dim);margin-top:18px}
+
+footer{border-top:1px solid var(--line);padding-block:34px;color:var(--dim);font-size:13px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center}
+.disc{max-width:60ch;line-height:1.5}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:26px;translate:-50% 30px;
+  background:#15171e;border:1px solid var(--acc-dim);color:var(--fg);padding:13px 20px;border-radius:12px;
+  font-size:14px;display:flex;align-items:center;gap:10px;box-shadow:0 14px 40px rgba(0,0,0,.5);
+  opacity:0;pointer-events:none;transition:.25s;z-index:50;max-width:calc(100vw - 32px)}
+.toast.show{opacity:1;translate:-50% 0}
+.toast .d{width:8px;height:8px;border-radius:50%;background:var(--acc);flex:none}
+/* ---------- free badge ---------- */
+.free-badge{display:inline-flex;align-items:center;gap:9px;font-family:var(--f-mono);font-size:12px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--acc);background:var(--acc-glow);
+  border:1px solid rgba(80,220,130,.3);padding:7px 14px;border-radius:999px;margin-bottom:22px;
+  animation:badgePulse 2.8s ease-in-out infinite}
+.free-badge .pp{width:8px;height:8px;border-radius:50%;background:var(--acc);animation:ping 2.8s ease-out infinite}
+@keyframes badgePulse{0%,100%{box-shadow:0 0 20px rgba(80,220,130,.12)}50%{box-shadow:0 0 34px rgba(80,220,130,.3)}}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(80,220,130,.55)}70%,100%{box-shadow:0 0 0 9px rgba(80,220,130,0)}}
+
+/* ---------- hero atmosphere ---------- */
+.hero{position:relative;overflow:hidden}
+.hero .wrap{position:relative;z-index:2}
+.hero-fx{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:
+    linear-gradient(transparent 0 97%, rgba(80,220,130,.06) 100%) 0 0/100% 36px,
+    linear-gradient(90deg,transparent 0 97%, rgba(80,220,130,.06) 100%) 0 0/36px 100%;
+  -webkit-mask:radial-gradient(75% 65% at 72% 18%,#000,transparent 80%);
+  mask:radial-gradient(75% 65% at 72% 18%,#000,transparent 80%);
+  animation:drift 24s linear infinite}
+@keyframes drift{to{background-position:0 360px,360px 0}}
+
+/* ---------- scroll reveal (resting state visible) ---------- */
+@keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+.reveal.in{animation:fadeUp .7s cubic-bezier(.2,.7,.2,1) both}
+
+/* ---------- floating preview ---------- */
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.preview-shell .mockscroll{animation:floaty 6.5s ease-in-out infinite}
+
+/* ---------- comparison ---------- */
+.cmp{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#101117}
+.cmp-row{display:grid;grid-template-columns:1.5fr 1fr 1fr;align-items:center}
+.cmp-row+.cmp-row{border-top:1px solid var(--line)}
+.cmp-row>div{padding:15px 18px}
+.cmp-head{background:#0d0d11}
+.cmp-head .ch{font-family:var(--f-head);font-weight:700;font-size:16px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.cmp-head .ch small{width:100%;font-family:var(--f-mono);font-size:11px;font-weight:400;letter-spacing:.04em;color:var(--mut)}
+.cmp-head .ch small.us{color:var(--acc)}
+.cmark{width:22px;height:22px;border-radius:6px;flex:none;display:grid;place-items:center;font-weight:800;font-size:12px;
+  background:linear-gradient(135deg,var(--acc),var(--acc-dim));color:#06240f}
+.cmp .us{color:var(--acc)}
+.cmp .them{color:var(--mut)}
+.cmp-col-us{background:var(--acc-glow);box-shadow:inset 0 0 0 1px rgba(80,220,130,.18)}
+.cmp .lbl{font-size:14px;color:var(--fg);font-weight:500}
+.cmp .val{font-size:13.5px;display:flex;align-items:center;gap:8px;color:var(--fg)}
+.cmp .val.price{font-family:var(--f-head);font-weight:700;font-size:16px}
+.cmp .val.price.them{color:var(--mut)}
+.ic-y,.ic-n{width:17px;height:17px;flex:none}
+.ic-y{color:var(--acc)}.ic-n{color:var(--danger)}
+.cmp-foot{font-size:12px;color:var(--dim);margin-top:14px;line-height:1.5}
+@media(max-width:620px){
+  .cmp-row{grid-template-columns:1.3fr .85fr .85fr}
+  .cmp-row>div{padding:12px 10px}
+  .cmp .lbl{font-size:12.5px}.cmp .val{font-size:12px;gap:6px}
+  .cmp .val.price{font-size:13.5px}
+}
+
+/* ---------- free banner ---------- */
+.freebar{text-align:center;border:1px dashed var(--acc-dim);border-radius:18px;padding:clamp(32px,5vw,52px);
+  background:radial-gradient(600px 220px at 50% 0,var(--acc-glow),transparent 70%)}
+.freebar .big{font-family:var(--f-head);font-weight:700;font-size:clamp(34px,6vw,62px);line-height:1;letter-spacing:-.02em}
+.freebar .big .g{color:var(--acc)}
+.freebar p{color:var(--mut);max-width:46ch;margin:16px auto 0}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}
+  .reveal.in{opacity:1!important;transform:none!important}}
+</style>
+
+</head>
+<body>
+<nav class="nav">
+  <div class="wrap">
+    <div class="brand"><span class="mark">T</span>Tuff<span class="g">Ware</span></div>
+    <div class="links">
+      <a href="#features">Features</a>
+      <a href="#compare">Free vs paid</a>
+      <a href="#preview">Preview</a>
+      <a href="#download">Download</a>
+    </div>
+    <span class="mini">v1.0 Â· free forever</span>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-fx"></div>
+  <div class="wrap">
+    <div>
+      <div class="free-badge"><span class="pp"></span>100% free Â· forever Â· no key</div>
+      <div class="eyebrow">External overlay for Roblox</div>
+      <h1>Tuff<span class="g">Ware</span><br>plays the hard part.</h1>
+      <p class="lead">A lightweight external overlay with combat assistance, full ESP, movement mods and a clean draggable HUD â€” rendered over the game, never inside it.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" id="dl" href="https://github.com/porqueijjmzm1/Tuffware/releases/download/tuffware/tuffwareExternal.zip" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+          Download TuffWare
+        </a>
+        <a class="btn btn-ghost" href="#features">See features</a>
+      </div>
+      <div class="cta-note" style="margin-top:12px">Windows 10/11 Â· x64 Â· ~270 KB</div>
+      <div class="stat-row">
+        <div class="stat"><div class="n" style="color:var(--acc)">$0</div><div class="l">forever</div></div>
+        <div class="stat"><div class="n">30+</div><div class="l">features</div></div>
+        <div class="stat"><div class="n">7</div><div class="l">menu tabs</div></div>
+        <div class="stat"><div class="n">âˆž</div><div class="l">configs</div></div>
+      </div>
+    </div>
+
+    <div class="preview-shell">
+      <div style="text-align:center">
+        <div class="wm"><span class="bar"></span><b>Tuff<span class="g">Ware</span></b><span class="sep">|</span><span class="mut" id="wm-user">guest</span><span class="sep">|</span><span class="mut" id="wm-fps">144 fps</span><span class="sep">|</span><span class="mut" id="wm-clock">--:--</span></div>
+      </div>
+      <div class="mockscroll">
+        <div class="mock">
+          <div class="side">
+            <div class="logo"><span class="mark">T</span>Tuff<span class="g">Ware</span></div>
+            <div id="navlist"></div>
+          </div>
+          <div class="body">
+            <h3 id="tab-title">Combat</h3>
+            <div class="sub" id="tab-sub">Aimbot, silent aim & triggerbot</div>
+            <div id="tab-rows"></div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;color:var(--dim);font-size:12px;margin-top:10px;font-family:var(--f-mono)">
+        live preview Â· click the tabs
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="features" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">What's inside</div>
+      <h2>Every function, grouped the way the menu is.</h2>
+      <p>The in-game menu is split into tabs. Here's what each one does.</p>
+    </div>
+    <div class="fgrid" id="featgrid"></div>
+  </div>
+</section>
+
+<section id="compare">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Free vs paid</div>
+      <h2>Everything the paid ones charge for.</h2>
+      <p>TuffWare lines up with popular paid externals like Matcha â€” the same kind of features, without the price tag, the key or the subscription.</p>
+    </div>
+    <div class="cmp reveal">
+      <div class="cmp-row cmp-head">
+        <div></div>
+        <div class="cmp-col-us"><div class="ch us"><span class="cmark">T</span>TuffWare<small class="us">free &amp; open</small></div></div>
+        <div><div class="ch them">Matcha<small>paid external</small></div></div>
+      </div>
+      <div class="cmp-row"><div class="lbl">Price</div><div class="cmp-col-us"><div class="val price us">Free, forever</div></div><div><div class="val price them">$9.99 lifetime*</div></div></div>
+      <div class="cmp-row"><div class="lbl">Aimbot + prediction</div><div class="cmp-col-us"><div class="val"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Yes</div></div><div><div class="val them"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Yes</div></div></div>
+      <div class="cmp-row"><div class="lbl">Silent aim (no camera snap)</div><div class="cmp-col-us"><div class="val"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Yes</div></div><div><div class="val them"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Yes</div></div></div>
+      <div class="cmp-row"><div class="lbl">Full player ESP</div><div class="cmp-col-us"><div class="val"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Yes</div></div><div><div class="val them"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Yes</div></div></div>
+      <div class="cmp-row"><div class="lbl">Triggerbot</div><div class="cmp-col-us"><div class="val"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Yes</div></div><div><div class="val them"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Yes</div></div></div>
+      <div class="cmp-row"><div class="lbl">Movement &amp; rage mods</div><div class="cmp-col-us"><div class="val"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Yes</div></div><div><div class="val them"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Yes</div></div></div>
+      <div class="cmp-row"><div class="lbl">Named config profiles</div><div class="cmp-col-us"><div class="val"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Yes</div></div><div><div class="val them"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Yes</div></div></div>
+      <div class="cmp-row"><div class="lbl">Custom UI color + draggable HUD</div><div class="cmp-col-us"><div class="val"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Yes</div></div><div><div class="val them" style="color:var(--mut)">Limited</div></div></div>
+      <div class="cmp-row"><div class="lbl">License key / HWID lock</div><div class="cmp-col-us"><div class="val us"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>Not required</div></div><div><div class="val them"><svg class="ic-n" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>Required</div></div></div>
+      <div class="cmp-row"><div class="lbl">Subscription / paywall</div><div class="cmp-col-us"><div class="val us"><svg class="ic-y" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>None</div></div><div><div class="val them"><svg class="ic-n" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></svg>Yes</div></div></div>
+    </div>
+    <p class="cmp-foot">* Pricing and features of third-party paid tools vary and change often; shown for comparison and not independently verified. TuffWare is free for personal use.</p>
+  </div>
+</section>
+
+<section id="preview">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">The interface</div>
+      <h2>A real UI, not a console.</h2>
+      <p>Direct2D-rendered menu with animated tabs, a startup splash, custom accent color and a HUD watermark you can drag anywhere on screen.</p>
+    </div>
+    <div class="fgrid">
+      <div class="card reveal"><div class="top"><div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg></div><div><h3>Clean menu</h3><span class="tag">Direct2D</span></div></div><p>Tabbed layout with a sliding selection indicator, smooth hover/open animations and a draggable window.</p></div>
+      <div class="card reveal"><div class="top"><div class="ico"><svg viewBox="0 0 24 24"><path d="M4 12h16"/><path d="M12 4v16"/><circle cx="12" cy="12" r="9"/></svg></div><div><h3>Startup splash</h3><span class="tag">Animation</span></div></div><p>On launch the logo slides across and the TuffWare wordmark wipes in, then the menu opens.</p></div>
+      <div class="card reveal"><div class="top"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><h3>HUD watermark</h3><span class="tag">Draggable</span></div></div><p>Shows your name, live FPS and the clock. Grab it with the menu open and drop it anywhere â€” position is saved.</p></div>
+      <div class="card reveal"><div class="top"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="13" cy="9" r="5"/><path d="M3 21a7 7 0 0 1 12-5"/><path d="M18 8l2 2 3-4"/></svg></div><div><h3>Streamer mode</h3><span class="tag">Privacy</span></div></div><p>Excludes the overlay from screen capture, so it stays off your recordings and streams.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="how" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">How it works</div>
+      <h2>Runs beside the game, not in it.</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><h3>Launch first</h3><p>Open TuffWare.exe. A small loader panel shows "TUFF" and waits for Roblox.</p></div>
+      <div class="step reveal"><h3>Start Roblox</h3><p>Once a game is detected, the loader closes, the splash plays and the overlay takes over.</p></div>
+      <div class="step reveal"><h3>Toggle & play</h3><p>Press <kbd>Right Shift</kbd> to open the menu, tune everything, then <kbd>End</kbd> to exit.</p></div>
+    </div>
+    <div class="specs" style="margin-top:36px">
+      <div class="spec"><div class="k">Type</div><div class="v">External<small>transparent topmost overlay</small></div></div>
+      <div class="spec"><div class="k">Render</div><div class="v">DirectComposition<small>Direct2D + D3D11, per-pixel alpha</small></div></div>
+      <div class="spec"><div class="k">Menu key</div><div class="v"><kbd>R-Shift</kbd><small>rebindable in Settings</small></div></div>
+      <div class="spec"><div class="k">Platform</div><div class="v">Windows x64<small>Win10 / Win11</small></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="free">
+  <div class="wrap">
+    <div class="freebar reveal">
+      <div class="big">Free, <span class="g">forever.</span></div>
+      <p>No key, no HWID lock, no subscription, no "reseller". TuffWare costs nothing today and it stays that way â€” download it and keep it.</p>
+    </div>
+  </div>
+</section>
+
+<section id="download">
+  <div class="wrap">
+    <div class="dlcta reveal">
+      <div class="eyebrow" style="justify-content:center">Get it</div>
+      <h2>Download Tuff<span style="color:var(--acc)">Ware</span></h2>
+      <p>One executable, no installer, no license key. Free today, free forever.</p>
+      <a class="btn btn-primary" id="dl2" href="https://github.com/porqueijjmzm1/Tuffware/releases/download/tuffware/tuffwareExternal.zip" target="_blank" rel="noopener" style="font-size:16px;padding:15px 30px">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+        Download for Windows
+      </a>
+      <div class="ver">tuffwareExternal.zip Â· v1.0.0 Â· x64 Â· hosted on GitHub</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="brand" style="font-size:16px"><span class="mark" style="width:22px;height:22px;font-size:12px">T</span>Tuff<span class="g">Ware</span></div>
+    <p class="disc">For educational and personal use. Using third-party software with online games can violate their terms of service and may result in a ban. Use at your own risk.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast"><span class="d"></span><span id="toast-msg"></span></div>
+
+<script>
+/* ---------- in-menu preview data ---------- */
+const TABS = [
+  {name:"Combat", sub:"Aimbot, silent aim & triggerbot", rows:[
+    {t:"toggle",l:"Aimbot",d:"snap to the closest target",on:false},
+    {t:"slider",l:"FOV",v:40,min:5,max:100,suf:"Â°"},
+    {t:"slider",l:"Smoothing",v:28,min:0,max:100,suf:""},
+    {t:"toggle",l:"Silent aim",d:"no visible camera snap",on:true},
+    {t:"toggle",l:"Triggerbot",d:"auto-fire on target",on:false},
+    {t:"slider",l:"Trigger delay",v:18,min:0,max:100,suf:"ms"},
+  ]},
+  {name:"Visuals", sub:"Player ESP", rows:[
+    {t:"toggle",l:"ESP enabled",d:"",on:true},
+    {t:"seg",l:"Box style",opts:["Corners","Full","Filled"],sel:0},
+    {t:"toggle",l:"Name + distance",d:"",on:true},
+    {t:"toggle",l:"Health bar",d:"",on:true},
+    {t:"toggle",l:"Tracers",d:"",on:false},
+    {t:"slider",l:"Max distance",v:66,min:0,max:100,suf:"m"},
+  ]},
+  {name:"Misc", sub:"Movement & rage mods", rows:[
+    {t:"toggle",l:"Walkspeed",d:"",on:false},
+    {t:"slider",l:"Speed",v:50,min:0,max:100,suf:""},
+    {t:"toggle",l:"Infinite jump",d:"",on:true},
+    {t:"toggle",l:"Spinbot",d:"",on:false},
+    {t:"toggle",l:"Rage teleport",d:"TP to target on key",on:false},
+  ]},
+  {name:"Players", sub:"Scoreboard & spectate", rows:[
+    {t:"toggle",l:"Show player list",d:"",on:true},
+    {t:"toggle",l:"Spectate target",d:"",on:false},
+    {t:"toggle",l:"Team check",d:"ignore teammates",on:true},
+  ]},
+  {name:"Explorer", sub:"Instance tree", rows:[
+    {t:"toggle",l:"Live tree",d:"browse game objects",on:true},
+    {t:"toggle",l:"Highlight selection",d:"",on:false},
+  ]},
+  {name:"Configs", sub:"Named profiles", rows:[
+    {t:"toggle",l:"Auto-load last",d:"",on:true},
+    {t:"seg",l:"Profile",opts:["legit","rage","hvh"],sel:0},
+  ]},
+  {name:"Settings", sub:"Appearance & keys", rows:[
+    {t:"toggle",l:"Watermark",d:"",on:true},
+    {t:"toggle",l:"Rain effect",d:"",on:true},
+    {t:"toggle",l:"Streamer mode",d:"hide from capture",on:false},
+    {t:"slider",l:"Accent hue",v:42,min:0,max:100,suf:""},
+  ]},
+];
+
+let active=0;
+const navlist=document.getElementById('navlist');
+TABS.forEach((tb,i)=>{
+  const el=document.createElement('div');
+  el.className='navitem'+(i===0?' on':'');
+  el.innerHTML='<span class="dot"></span>'+tb.name;
+  el.onclick=()=>{active=i;document.querySelectorAll('.navitem').forEach((n,j)=>n.classList.toggle('on',j===i));renderTab();};
+  navlist.appendChild(el);
+});
+
+function renderTab(){
+  const tb=TABS[active];
+  document.getElementById('tab-title').textContent=tb.name;
+  document.getElementById('tab-sub').textContent=tb.sub;
+  const box=document.getElementById('tab-rows');
+  box.innerHTML='';
+  tb.rows.forEach(r=>{
+    const row=document.createElement('div');row.className='row';
+    const left=document.createElement('div');
+    left.innerHTML='<div class="rl">'+r.l+'</div>'+(r.d?'<div class="rd">'+r.d+'</div>':'');
+    row.appendChild(left);
+    if(r.t==='toggle'){
+      const sw=document.createElement('div');sw.className='sw'+(r.on?' on':'');
+      sw.onclick=()=>{r.on=!r.on;sw.classList.toggle('on',r.on);};
+      row.appendChild(sw);
+    }else if(r.t==='slider'){
+      const w=document.createElement('div');w.className='sld';
+      w.innerHTML='<div class="track"><div class="fill"></div><div class="knob"></div></div><div class="sval"></div>';
+      row.appendChild(w);
+      const track=w.querySelector('.track'),fill=w.querySelector('.fill'),knob=w.querySelector('.knob'),val=w.querySelector('.sval');
+      const paint=()=>{fill.style.width=r.v+'%';knob.style.left=r.v+'%';
+        const real=Math.round(r.min+(r.max-r.min)*r.v/100);val.textContent=real+r.suf;};
+      paint();
+      const set=e=>{const b=track.getBoundingClientRect();let p=((e.touches?e.touches[0].clientX:e.clientX)-b.left)/b.width*100;r.v=Math.max(0,Math.min(100,p));paint();};
+      const down=e=>{set(e);const mv=ev=>set(ev);const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);};addEventListener('pointermove',mv);addEventListener('pointerup',up);e.preventDefault();};
+      track.addEventListener('pointerdown',down);
+    }else if(r.t==='seg'){
+      const seg=document.createElement('div');seg.className='seg';
+      r.opts.forEach((o,k)=>{const s=document.createElement('span');s.textContent=o;if(k===r.sel)s.className='on';
+        s.onclick=()=>{r.sel=k;seg.querySelectorAll('span').forEach((x,j)=>x.classList.toggle('on',j===k));};seg.appendChild(s);});
+      row.appendChild(seg);
+    }
+    box.appendChild(row);
+  });
+}
+renderTab();
+
+/* ---------- feature cards ---------- */
+const ICONS={
+  target:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/>',
+  eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+  bolt:'<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/>',
+  users:'<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M17 8a4 4 0 0 1 0 8"/><path d="M22 21a7 7 0 0 0-5-6.7"/>',
+  tree:'<rect x="3" y="3" width="7" height="5" rx="1"/><rect x="14" y="16" width="7" height="5" rx="1"/><path d="M6.5 8v5a2 2 0 0 0 2 2H14"/>',
+  save:'<path d="M5 3h11l3 3v15H5Z"/><path d="M8 3v5h7"/><circle cx="12" cy="14" r="2.5"/>',
+  gear:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
+};
+const FEATURES=[
+  {ico:'target',tag:'Combat',h:'Aimbot',p:'Snaps your aim to the best target inside a configurable cone.',
+   f:['FOV cone <span>â€” how wide it grabs</span>','Smoothing <span>â€” natural, less snappy</span>','Target limb <span>â€” head, torso, â€¦</span>','Prediction / lead <span>â€” for moving targets</span>','Sticky target, visible & team checks']},
+  {ico:'target',tag:'Combat',h:'Silent aim',p:'Corrects shots toward the target without moving your camera.',
+   f:['Separate FOV & limb','Optional restore-camera for a true silent feel','Auto-fire','Require-key activation (off by default)']},
+  {ico:'bolt',tag:'Combat',h:'Triggerbot',p:'Fires automatically the moment your crosshair is on a target.',
+   f:['Reaction delay <span>â€” always-visible slider</span>','Refire gap between shots','Crosshair FOV window','Visible, alive & team checks']},
+  {ico:'eye',tag:'Visuals',h:'Player ESP',p:'See every player through walls with a clean, configurable box.',
+   f:['Box styles <span>â€” corners, full, filled</span>','Name, distance & health bar','Snaplines / tracers','Max-distance cutoff','Custom ESP color']},
+  {ico:'bolt',tag:'Misc',h:'Movement & rage',p:'Bend the game\'s movement and positioning to your will.',
+   f:['Walkspeed & jump power','Infinite jump','Spinbot','Rage teleport to target','Adjustable speeds & cooldowns']},
+  {ico:'users',tag:'Players',h:'Players & spectate',p:'A live scoreboard of everyone in the server.',
+   f:['Player list with distance','Spectate any target','Team-check everywhere']},
+  {ico:'tree',tag:'Explorer',h:'Explorer',p:'Browse the live instance tree of the running game.',
+   f:['Walk the object hierarchy','Inspect instances','Highlight selection']},
+  {ico:'save',tag:'Configs',h:'Config profiles',p:'Save your whole setup as named profiles and switch instantly.',
+   f:['Create, load, rename & delete','One file per profile','Keep a legit and a rage build side by side']},
+  {ico:'gear',tag:'Settings',h:'Appearance',p:'Make it yours.',
+   f:['Custom menu accent color','Draggable HUD watermark','Rain effect','Streamer mode','Rebindable menu key']},
+];
+const grid=document.getElementById('featgrid');
+FEATURES.forEach(ft=>{
+  const c=document.createElement('div');c.className='card reveal';
+  c.style.animationDelay=((grid.children.length%2)*90)+'ms';
+  c.innerHTML='<div class="top"><div class="ico"><svg viewBox="0 0 24 24">'+ICONS[ft.ico]+'</svg></div>'+
+    '<div><h3>'+ft.h+'</h3><span class="tag">'+ft.tag+'</span></div></div>'+
+    '<p>'+ft.p+'</p><ul class="feats">'+ft.f.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+  grid.appendChild(c);
+});
+
+/* ---------- live watermark ---------- */
+function tick(){
+  const d=new Date();
+  document.getElementById('wm-clock').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  document.getElementById('wm-fps').textContent=(140+Math.floor(Math.random()*12))+' fps';
+}
+tick();setInterval(tick,1000);
+
+/* ---------- inert download button ---------- */
+let tto;
+function toast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');clearTimeout(tto);tto=setTimeout(()=>t.classList.remove('show'),3400);
+}
+function dlClick(){toast("Starting download from GitHubâ€¦");}
+document.getElementById('dl').addEventListener('click',dlClick);
+document.getElementById('dl2').addEventListener('click',dlClick);
+
+/* ---------- scroll-reveal ---------- */
+const io=new IntersectionObserver((es)=>{
+  es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+},{threshold:.12,rootMargin:'0px 0px -7% 0px'});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+
+</body>
+</html>
+
