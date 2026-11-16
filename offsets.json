@@ -1,0 +1,7 @@
+{
+  "_comment": "TuffWare auto-update offsets. Update these after a Roblox update and all deployed builds pick them up on next launch.",
+  "version": "version-4ea8e85481e34f46",
+  "FakeDataModel.Pointer": "0x8f8e968",
+  "TaskScheduler.Pointer": "0x8f1e408",
+  "VisualEngine.Pointer": "0x8a11808"
+}
